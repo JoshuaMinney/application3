@@ -1,0 +1,26 @@
+Thursday 23 Oct:
+1) finding where files output - completed
+2) Look at setting up SSL keys - completed
+3) commenting and going through each individual line -completed
+
+Friday 24 Oct Oct:
+1) Look at setting up SSL keys (carried over from 23rd Oct)
+- Add a button to go between Encrypt and Decrypt sites - Ethan + Josh - completed
+        - a button to get from encrypt site to decrypt - completed
+        - a button to get from decrypt site to encrypt - completed
+
+Thursday 30 Oct:
+1) Figure out how to get key from /decrypt as a variable - completed
+2) Get original file decrypted - completed
+3) Allow original file to ger redownloaded - completed
+- Decrypt and Download files - Josh - completed
+        - get /decrypt site viewable - completed
+        - get the decrypton functionality working - completed 
+
+Thursday 6 Nov:
+1) - Check Login Requirements for STIG - Ethan - Incomplete, finsihed next day (V-206407)
+2) - Start V-206434 - Josh - Incomplete, finished next day
+
+Friday 7 Nov:
+1) - Finished V-206434 - Josh and Ethan - complete
+

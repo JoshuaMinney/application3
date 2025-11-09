@@ -1,0 +1,103 @@
+INFO:app:Loaded /decrypt
+INFO:app:decrypt site
+INFO:werkzeug:172.18.0.3 - - [08/Nov/2025 17:19:45] "GET /decrypt HTTP/1.0" 200 -
+INFO:app:loaded /
+INFO:werkzeug:172.18.0.3 - - [08/Nov/2025 17:19:50] "GET / HTTP/1.0" 200 -
+2025-11-08 17:24:29,066 : SRC=N/A : DST=N/A : [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.18.0.2:5000
+2025-11-08 17:24:29,067 : SRC=N/A : DST=N/A : [33mPress CTRL+C to quit[0m
+2025-11-08 17:24:54,511 : SRC=172.18.0.3 : DST=localhost : loaded /
+2025-11-08 17:24:54,517 : SRC=N/A : DST=N/A : 172.18.0.3 - - [08/Nov/2025 17:24:54] "GET / HTTP/1.0" 200 -
+2025-11-08 17:24:55,257 : SRC=N/A : DST=N/A : 172.18.0.3 - - [08/Nov/2025 17:24:55] "[33mGET /favicon.ico HTTP/1.0[0m" 404 -
+2025-11-08 17:25:18,839 : SRC=172.18.0.3 : DST=localhost : Loaded /decrypt
+2025-11-08 17:25:18,840 : SRC=172.18.0.3 : DST=localhost : decrypt site
+2025-11-08 17:25:18,845 : SRC=N/A : DST=N/A : 172.18.0.3 - - [08/Nov/2025 17:25:18] "GET /decrypt HTTP/1.0" 200 -
+2025-11-08 21:23:25,691 : [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.18.0.2:5000
+2025-11-08 21:23:25,692 : [33mPress CTRL+C to quit[0m
+2025-11-08 21:56:55,979 : [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.18.0.2:5000
+2025-11-08 21:56:55,980 : [33mPress CTRL+C to quit[0m
+2025-11-08 21:57:18,442 : Exception on / [GET]
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/site-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app.py", line 93, in index
+    app.logger.info ("loaded / from: " + {request.remote_addr})
+                     ~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
+TypeError: can only concatenate str (not "set") to str
+2025-11-08 21:57:18,452 : 172.18.0.3 - - [08/Nov/2025 21:57:18] "[35m[1mGET / HTTP/1.0[0m" 500 -
+2025-11-08 21:57:19,377 : 172.18.0.3 - - [08/Nov/2025 21:57:19] "[33mGET /favicon.ico HTTP/1.0[0m" 404 -
+2025-11-08 21:58:55,807 : [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.18.0.2:5000
+2025-11-08 21:58:55,807 : [33mPress CTRL+C to quit[0m
+2025-11-08 21:59:08,275 : Exception on / [GET]
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/site-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app.py", line 93, in index
+    app.logger.info ("loaded / from: " + {request.remote_addr})
+                     ~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
+TypeError: can only concatenate str (not "set") to str
+2025-11-08 21:59:08,280 : 172.18.0.3 - - [08/Nov/2025 21:59:08] "[35m[1mGET / HTTP/1.0[0m" 500 -
+2025-11-08 21:59:09,624 : Exception on / [GET]
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/site-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app.py", line 93, in index
+    app.logger.info ("loaded / from: " + {request.remote_addr})
+                     ~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
+TypeError: can only concatenate str (not "set") to str
+2025-11-08 21:59:09,627 : 172.18.0.3 - - [08/Nov/2025 21:59:09] "[35m[1mGET / HTTP/1.0[0m" 500 -
+2025-11-08 21:59:57,121 : [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.18.0.2:5000
+2025-11-08 21:59:57,122 : [33mPress CTRL+C to quit[0m
+2025-11-08 22:00:09,044 : loaded / from: {request.remote_addr}
+2025-11-08 22:00:09,063 : 172.18.0.3 - - [08/Nov/2025 22:00:09] "GET / HTTP/1.0" 200 -
+2025-11-08 22:01:50,667 : [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.18.0.2:5000
+2025-11-08 22:01:50,668 : [33mPress CTRL+C to quit[0m
+2025-11-08 22:01:57,233 : loaded / from: 172.18.0.3
+2025-11-08 22:01:57,240 : 172.18.0.3 - - [08/Nov/2025 22:01:57] "GET / HTTP/1.0" 200 -

@@ -1,0 +1,20 @@
+
+#TODO - Need to check what the logging requirements for the STIG are
+
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s', #format that gets outputted in the lgos
+                    handlers=[
+                        logging.FileHandler("/app/logs/flask_app.log"),
+                        logging.StreamHandler()
+                    ])
+
+
+
+The relevant file for logging requirements is SRG-APP-000231-WSR-000144
+'Information at rest must be encrypted using a DOD-accepted algorithm to protect the confidentiality and integrity of the information.'
+
+Data at rest = inactive data stored physically in any digital form
+
+
+
+a
