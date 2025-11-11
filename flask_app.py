@@ -1,12 +1,12 @@
 import os
 import logging
 import subprocess
+import secrets
+import string
 import time #needed for GMT time in the logging, V-206425
 from io import BytesIO
 from cryptography.fernet import Fernet
-from flask import Flask, render_template, request, send_file, jsonify
-
-
+from flask import Flask, render_template, request, send_file, jsonify, make_response
 
 API_LICENCE_KEY="AEQ0mNh87Vvrwf0UlsOleX9G78fW3citfOOcqRYkNEE="
 
@@ -33,7 +33,6 @@ app = Flask(__name__)
 
 
 
-
 #TODO - Need to check what data at rest requirements are for the STIGs
 def xor_encrypt_decrypt(data, key): #if not encrypted, decrypt. flips
     return bytes([b ^ key for b in data]) #uses key to perform a xor on each byte in data
@@ -51,7 +50,7 @@ def encrypt_file(file):
         f_enc.write(encrypted_data) #writes the encrypted data to disk
         
         
-    app.logger.info(f'File {file.filename} encrypted and saved to {encrypted_file_path} with key {key}')
+    printLog(f'File {file.filename} encrypted and saved to {encrypted_file_path} with key {key}')
     #Prints to the logs that the file has been encrypted and the save location
     return encrypted_file_path, key
     
@@ -71,14 +70,6 @@ def decrypt_file(filepath, key):
     return decrypted_file
     
 
-#TODO - Need to check what the logging requirements for the STIG are
-#logging.basicConfig(level=logging.DEBUG,
-#                    format='%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s', #format that gets outputted in the logs
-#                    handlers=[
-#                        logging.FileHandler("/app/logs/flask_app.log"),
-#                        logging.StreamHandler()
-#                    ])
-
 logging.Formatter.converter = time.gmtime #double check this is fine but 90% sure it work
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s : %(message)s', #format that gets outputted in the logs
@@ -86,40 +77,72 @@ logging.basicConfig(level=logging.DEBUG,
                         logging.FileHandler("/app/logs/flask_app.log"),
                         logging.StreamHandler()
                     ])
+#flask logging syntax:
+#app.logger.info (f"")
+#nginx and flask each run with a unique IP address. 
+#Nginx will show its own IP address, not the client browser. 
+#Need to get the ip address from the header inside nginx.conf. 
 
+
+def printLog(message): #made a function for this as writing out all the IP log stuff would be annoying
+    app.logger.info ("Source " + request.headers.get('X-Real-IP') + " : Destination " + request.host.split(':', 1)[0] + " : "+ message)
+
+def session_id():
+    sessionid = request.cookies.get("session_id") #checks if there is already a session id in cookies
+    if not sessionid:
+        #creates an alphabet of both characters and digits, then generates an 11 character 64 bit session id using the secure random generator 'secret'
+        alphabet = string.ascii_letters + string.digits
+        sessionid = ''.join(secrets.choice(alphabet) for i in range(11))
+    
+        
+        #adds session id to a response as a cookie if there is https, returns it to the browser, browser sends it back with every request so sessions can be tracked
+        resp = make_response('Cookie has been set')
+        resp.set_cookie("session_id", sessionid, secure = True)
+
+        printLog('Random session ID generated')
+        return resp
+    else:
+        printLog('Cookie already set')    
+        return None
+    
 
 @app.route('/', methods=['GET','POST'])
 def index():
-    app.logger.info (f"loaded / from: {request.remote_addr}")
+    printLog ("Loaded /")
+    resp = session_id()
+    if resp:
+        return resp
     if request.method == 'POST':
         password = request.form.get('password')
         ConfirmPassword = request.form.get('ConfirmPassword')
         email = request.form.get('email')
         if len(email) < 8:
-            app.logger.info ("Email is too short.")
+            printLog ("Email is too short.")
             pass
         if len(password) < 8:
-            app.logger.info ("Password is too short.")
+            printLog ("Password is too short.")
             pass
     
         if password != ConfirmPassword:
-            app.logger.info ("Passwords do not match.")
+            printLog ("Passwords do not match.")
             pass
         else:
             #code that will add user to database
-            app.logger.info ("Account created.")
+            printLog ("Account created.")
+
+        
     return render_template('index.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    app.logger.info ("Loaded /login")
+    printLog ("Loaded /login")
     return render_template('login.html')
 
 
 
 @app.route('/encrypt', methods=['POST'])
 def encrypt():
-    app.logger.info ("Loaded /encrypt")
+    printLog ("Loaded /encrypt")
     file = request.files['file']
     encrypted_file_path, encryption_key = encrypt_file(file)
     
@@ -133,8 +156,7 @@ def encrypt():
 # TODO - We should probably be able to decrypt and download files... Or at least access them somehow
 @app.route('/decrypt', methods=['GET', 'POST'])
 def decrypt():
-    app.logger.info ("Loaded /decrypt")
-    app.logger.info ("decrypt site")
+    printLog ("Loaded /decrypt")
     listofFiles = []
     for f in os.listdir("/tmp"):
         if f.endswith(".enc"):
@@ -151,3 +173,8 @@ def decrypt():
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0') #initial code originally used 
+
+
+
+
+
