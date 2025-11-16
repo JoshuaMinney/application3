@@ -8,6 +8,9 @@ from io import BytesIO
 from cryptography.fernet import Fernet
 from flask import Flask, render_template, request, send_file, jsonify, make_response
 
+
+
+
 API_LICENCE_KEY="AEQ0mNh87Vvrwf0UlsOleX9G78fW3citfOOcqRYkNEE="
 
 fernet = Fernet(API_LICENCE_KEY) #creates a fernet object using API key which can encrypt data
@@ -36,6 +39,10 @@ app = Flask(__name__)
 #TODO - Need to check what data at rest requirements are for the STIGs
 def xor_encrypt_decrypt(data, key): #if not encrypted, decrypt. flips
     return bytes([b ^ key for b in data]) #uses key to perform a xor on each byte in data
+
+#FIPS certified under Ubuntu 20.04 OpenSSL Cryptographic Module - #4292
+def aes_decrypt(file_data, key):
+    return 
 
 
 def encrypt_file(file):
@@ -77,23 +84,35 @@ logging.basicConfig(level=logging.DEBUG,
                         logging.FileHandler("/app/logs/flask_app.log"),
                         logging.StreamHandler()
                     ])
-#flask logging syntax:
-#app.logger.info (f"")
-#nginx and flask each run with a unique IP address. 
-#Nginx will show its own IP address, not the client browser. 
-#Need to get the ip address from the header inside nginx.conf. 
-
 
 def printLog(message): #made a function for this as writing out all the IP log stuff would be annoying
-    app.logger.info ("Source " + request.headers.get('X-Real-IP') + " : Destination " + request.host.split(':', 1)[0] + " : "+ message)
+    return app.logger.info ("Source " + request.headers.get('X-Real-IP') + " : Destination " + request.host.split(':', 1)[0] + " : "+ message)
+    
+
+def isFIPSCompliant():
+    filepath = open("/proc/sys/crypto/fips_enabled", "r")
+    FIPSCheck = filepath.read().strip() #by default theres a /n at the end, .strip removes it
+    filepath.close()
+
+    printLog ("System Checked for FIPS Compliance")
+    if FIPSCheck == "1":
+        printLog ("FIPS is enabled on the sysem. '/proc/sys/crypto/fips_enabled' = 1")
+    else:
+        printLog ("FIPS is not enabled on the system.")
+
 
 def session_id():
     sessionid = request.cookies.get("session_id") #checks if there is already a session id in cookies
     if not sessionid:
+        
+        isFIPSCompliant() #checks if FIPS is running in the OS
+
+
         #creates an alphabet of both characters and digits, then generates an 11 character 64 bit session id using the secure random generator 'secret'
         alphabet = string.ascii_letters + string.digits
-        sessionid = ''.join(secrets.choice(alphabet) for i in range(11))
-    
+        #secret is fips compliant, if the OS is running FIPS
+        sessionid = ''.join(secrets.choice(alphabet) for i in range(16)) #16 to comply with V-206401
+        #creates a sessionid consisting of all possible uppercase, lowercase and digits
         
         #adds session id to a response as a cookie if there is https, returns it to the browser, browser sends it back with every request so sessions can be tracked
         resp = make_response('Cookie has been set')

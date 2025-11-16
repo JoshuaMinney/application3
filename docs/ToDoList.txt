@@ -25,4 +25,10 @@ Friday 7 Nov:
 1) - Finished V-206434 - Josh and Ethan - complete
 
 Finished 10 Nov:
-1) - Finished V-206403 - Josh and Ethan - complete
+1) - Finished V-206403 - Josh and Ethan - The web server must generate unique session identifiers - complete
+2) - Finished V-206402 - Ethan - webserver must include widest possible character sets - Complete
+3) - Finished V-206361 - Josh - Logs now include timestamp, IP address and accurate description of what is happening.
+
+Finished 11 Nov:
+1) Finished V-206401 - Josh + Ethan - Session ID is 16bytes (increased from 11)- completed
+2)
