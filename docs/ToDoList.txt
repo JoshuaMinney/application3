@@ -24,11 +24,15 @@ Thursday 6 Nov:
 Friday 7 Nov:
 1) - Finished V-206434 - Josh and Ethan - complete
 
-Finished 10 Nov:
+Monday 10 Nov:
 1) - Finished V-206403 - Josh and Ethan - The web server must generate unique session identifiers - complete
 2) - Finished V-206402 - Ethan - webserver must include widest possible character sets - Complete
 3) - Finished V-206361 - Josh - Logs now include timestamp, IP address and accurate description of what is happening.
 
-Finished 11 Nov:
+Tuesday 11 Nov:
 1) Finished V-206401 - Josh + Ethan - Session ID is 16bytes (increased from 11)- completed
-2)
+
+Saturday 15 Nov:
+1) Upgraded Operating System to Ubuntu Pro and enabled FIPS usage - Josh
+2) Finished V-206399 - Josh + Ethan - researched FIPS to ensure our session number generator is FIPS 140-2 Compliant
+3) Created a function that ensures the OS has FIPS enabled - Josh

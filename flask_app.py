@@ -1,3 +1,5 @@
+#!/bin/bash
+
 import os
 import logging
 import subprocess
@@ -7,14 +9,17 @@ import time #needed for GMT time in the logging, V-206425
 from io import BytesIO
 from cryptography.fernet import Fernet
 from flask import Flask, render_template, request, send_file, jsonify, make_response
+import hashlib
 
-
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+#https://cryptography.io/en/latest/hazmat/primitives/aead/
 
 
 API_LICENCE_KEY="AEQ0mNh87Vvrwf0UlsOleX9G78fW3citfOOcqRYkNEE="
 
 fernet = Fernet(API_LICENCE_KEY) #creates a fernet object using API key which can encrypt data
 command = "source ~/.bashrc && echo $API_CHECK" #reloads bashrc and prints value of api check
+
 
 
 #this runs the code stored in command variable, captures and stores output without whitespace
@@ -40,34 +45,51 @@ app = Flask(__name__)
 def xor_encrypt_decrypt(data, key): #if not encrypted, decrypt. flips
     return bytes([b ^ key for b in data]) #uses key to perform a xor on each byte in data
 
-#FIPS certified under Ubuntu 20.04 OpenSSL Cryptographic Module - #4292
-def aes_decrypt(file_data, key):
-    return 
+def encryptFunction(nonce, data, key):
+    aesgcm = AESGCM(key)
+    ct = aesgcm.encrypt(nonce, data, None)
+    return ct
+
+    #aesgcm.decrypt(nonce, ct, aad)
 
 
 def encrypt_file(file):
-    key = os.urandom(1)[0]  # Generate a random 1-byte key
+    #key = os.urandom(1)[0]  # Generate a random 1-byte key
     file_data = file.read() 
-    encrypted_data = xor_encrypt_decrypt(file_data, key)
-
+    #encrypted_data = xor_encrypt_decrypt(file_data, key)
+    key = encryption_key()
+    nonce = os.urandom(12)
+    encrypted_data = encryptFunction(nonce, file_data, key)
     
-
     encrypted_file_path = os.path.join('/tmp', f"{file.filename}.enc")
     with open(encrypted_file_path, 'wb') as f_enc: #opens filepath, with wb mode (write binary)
         f_enc.write(encrypted_data) #writes the encrypted data to disk
+
         
-        
-    printLog(f'File {file.filename} encrypted and saved to {encrypted_file_path} with key {key}')
+    printLog(f'File {file.filename} encrypted and saved to {encrypted_file_path} with key {encryption_key()}')
     #Prints to the logs that the file has been encrypted and the save location
-    return encrypted_file_path, key
+    return encrypted_file_path, key, nonce
     
 
-def decrypt_file(filepath, key):
+def encryption_key():
+    i = os.urandom(16)
+    salt = os.urandom(16) # generates a key and a salt
+    key = hashlib.pbkdf2_hmac('sha256', i, salt, 480000, dklen=32) #combines both i and salt and hashes them using sha256 iteration count is 480000 inline with AES 256
+    #send_file(variable222, as_attachment= True, download_name= "key.txt" )
+    return key
+
+def decryptFunction(data, key, nonce):
+    aesgcm = AESGCM(key)
+    return aesgcm.decrypt(nonce, data, None)
+
+def decrypt_file(filepath, key, nonce):
     with open(filepath, 'rb') as f_enc:
         encrypted_data = f_enc.read() #reads the encrypted data
     
-    decrypted_data = xor_encrypt_decrypt(encrypted_data, key)
+    #decrypted_data = xor_encrypt_decrypt(encrypted_data, key)
     #calls upon the decryption function to decrypt with xor
+
+    decrypted_data = decryptFunction(encrypted_data, key, nonce)
 
     # Use BytesIO to handle the in-memory file for sending
     decrypted_file = BytesIO()
@@ -88,6 +110,9 @@ logging.basicConfig(level=logging.DEBUG,
 def printLog(message): #made a function for this as writing out all the IP log stuff would be annoying
     return app.logger.info ("Source " + request.headers.get('X-Real-IP') + " : Destination " + request.host.split(':', 1)[0] + " : "+ message)
     
+
+
+
 
 def isFIPSCompliant():
     filepath = open("/proc/sys/crypto/fips_enabled", "r")
@@ -159,18 +184,21 @@ def login():
 
 
 
-@app.route('/encrypt', methods=['POST'])
+@app.route('/encrypt', methods=['GET', 'POST'])
 def encrypt():
     printLog ("Loaded /encrypt")
-    file = request.files['file']
-    encrypted_file_path, encryption_key = encrypt_file(file)
-    
-    # Return the encryption key to the user
-    return jsonify({
-        "message": f"File saved to {encrypted_file_path}",
-        "encryption_key": encryption_key
-    }), 200
-    
+    if request.method == "POST":
+        file = request.files['file']
+        encrypted_file_path, key, nonce = encrypt_file(file)
+        #key = encryption_key()
+        # Return the encryption key to the user
+        return jsonify({
+            "message": f"File saved to {encrypted_file_path}",
+            "encryption_key": key.hex(),
+            "nonce": nonce.hex()
+        }), 200
+    return render_template('encrypt.html')
+
 
 # TODO - We should probably be able to decrypt and download files... Or at least access them somehow
 @app.route('/decrypt', methods=['GET', 'POST'])
@@ -182,10 +210,10 @@ def decrypt():
             listofFiles.append(f)
     
     if request.method == "POST":
-    
-        decrypt_key = int(request.form["decrypt_key"])
+        decrypt_key = bytes.fromhex(request.form["decrypt_key"])
+        nonce = bytes.fromhex(request.form["nonce"])
         filepath = os.path.join('/tmp', request.form["filename"])
-        return send_file(decrypt_file(filepath, decrypt_key), as_attachment= True, download_name= request.form["filename"].replace(".enc", ""))
+        return send_file(decrypt_file(filepath, decrypt_key, nonce), as_attachment= True, download_name= request.form["filename"].replace(".enc", ""))
     return render_template('decrypt.html', files=listofFiles)
 
         
