@@ -36,3 +36,10 @@ Saturday 15 Nov:
 1) Upgraded Operating System to Ubuntu Pro and enabled FIPS usage - Josh
 2) Finished V-206399 - Josh + Ethan - researched FIPS to ensure our session number generator is FIPS 140-2 Compliant
 3) Created a function that ensures the OS has FIPS enabled - Josh
+
+Thursday 20 Nov:
+1) Finished V-264361, created a system to check if the IP Address used when the session was created still matches the current address
+
+Friday 21 Nov:
+1) Finised V-206415, tested and fixed the possibility of cookie manipulation - Josh
+2) 

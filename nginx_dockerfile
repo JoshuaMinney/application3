@@ -9,5 +9,7 @@ RUN mkdir -p /etc/nginx/certs
 COPY certs/nginx.crt /etc/nginx/certs/nginx.crt
 COPY certs/nginx.key /etc/nginx/certs/nginx.key
 RUN chmod 600 /etc/nginx/certs/nginx.key
-RUN chmod 600 /etc/nginx/certs/nginx.crt
+RUN chmod 644 /etc/nginx/certs/nginx.crt
+RUN chown nginx:nginx /etc/nginx/certs/nginx.key /etc/nginx/certs/nginx.crt
+
 

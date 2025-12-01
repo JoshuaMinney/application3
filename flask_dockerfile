@@ -2,6 +2,10 @@
 
 FROM majidockerid/uwe:application3
 
+RUN useradd -ms /bin/bash flaskuser
+
+WORKDIR /home/flaskuser
+
 RUN mkdir /app
 
 WORKDIR /app
@@ -11,6 +15,14 @@ COPY templates /app/templates
 COPY flask_app.py /app/app.py
 
 RUN mkdir -p /app/logs
+RUN touch /app/logs/flask_app.log
+RUN chown flaskuser:flaskuser /app/logs /app/logs/flask_app.log
+RUN chmod 700 /app/logs
+RUN chmod 600 /app/logs/flask_app.log
+
+
+USER flaskuser
+
 
 EXPOSE 5000
 
